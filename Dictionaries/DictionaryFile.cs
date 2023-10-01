@@ -106,10 +106,12 @@ namespace DictFiles
             DictionaryFileReadWrite.WriteToFile(wordTranslations, Path);
         }
 
+
         public void Replace(string wordKey, string newWordKey)
         {
             File.WriteAllText(Path, File.ReadAllText(Path).Replace(wordKey, newWordKey));            
         }
+
         public void Replace(KeyValuePair<string,string> keyValuePair, string newValue)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -128,6 +130,7 @@ namespace DictFiles
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
 
+
         public void Remove(KeyValuePair<string, string> keyValuePair)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -144,6 +147,7 @@ namespace DictFiles
             wordsFromFile[keyValuePair.Key].Remove(keyValuePair.Value);
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
+
         public void Remove(string wordKey)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -155,6 +159,7 @@ namespace DictFiles
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
 
+
         public List<string> Find(string wordKey)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -165,6 +170,7 @@ namespace DictFiles
             return wordsFromFile[wordsFromFile.Keys.ToList().Find(x => x.Equals(wordKey))];
         }
 
+
         static public void Create(string path, bool recreateFlag)
         {
 
@@ -174,6 +180,7 @@ namespace DictFiles
             Stream fStream = File.Create(path);
             fStream.Close();
         }
+
 
         static public void Export(MultiDictionary<string, string> wordTranslations, string newPath)
         {

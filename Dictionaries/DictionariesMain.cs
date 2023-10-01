@@ -31,6 +31,7 @@ namespace Dictionaries
 
             return wordTranslation;
         }
+
         static public KeyValuePair<string, string> EnterWordTranslation()
         {
             Dictionary<string, string> wordTranslation = new Dictionary<string, string>();
@@ -43,11 +44,13 @@ namespace Dictionaries
 
             return wordTranslation.First();
         }
+
         static public string EnterLine(string text)
         {
             DictionaryConsole.DisplayText($"{text}:");
             return DictionaryConsole.GetLine();
         }
+
         static public string EnterPathForCreate()
         {
             DictionaryConsole.DisplayText("(For Exit enter 0)\n");
@@ -61,6 +64,7 @@ namespace Dictionaries
             string fileName = DictionaryConsole.GetLine(); ;
             return pathToDirectory + "\\" + fileName + ".txt";
         }
+
         static public string EnterPathForOpen()
         {
             DictionaryConsole.DisplayText("Enter a path to file: \n(For Exit enter 0)\n");
