@@ -83,11 +83,11 @@ namespace DictsConsoleInterface
             "3| - Return\n"
         };
 
-        static public List<string> subMenuFinding = new List<string> {
-            "1| - Find translation in all files\n",
+       /* static public List<string> subMenuFinding = new List<string> {
+            "1| - Find translation in all directory\n",
             "2| - Find translation in definited file\n",
             "3| - Return\n"
-        };
+        };*/
 
         static public List<string> yesNoMenu = new List<string>
         {

@@ -14,7 +14,5 @@ internal class Program
     {
         DictionariesMain m = new DictionariesMain();
         m.Main();
-
-
     }
 }
