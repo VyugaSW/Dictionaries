@@ -7,16 +7,13 @@ using System.Text.RegularExpressions;
 using System.IO;
 using Universal.Common.Collections;
 
-using DictionariesFiles;
-
-using DictionariesMenu;
-
+using Dictionaries;
 internal class Program
 {
     static void Main(string[] args)
     {
-        DictionaryFile DicFile = new DictionaryFile(@"D:\\Test\English-Russia.txt", FileMode.Open);
-        MultiDictionary<string, string> AuthorList = new MultiDictionary<string, string>();
+        DictionariesMain m = new DictionariesMain();
+        m.Main();
 
 
     }
