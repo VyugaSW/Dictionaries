@@ -14,19 +14,19 @@ namespace DictFiles
 
     static public class DictionaryFileReadWrite
     {
-        static public void WriteToFile(MultiDictionary<string, string> wordTranslations, string path)
+        static public void WriteToFile(MultiDictionary<string, string> keyValues, string path)
         {
             if (!File.Exists(path))
                 throw new IOException($"File with path \"{path}\" does not exist");
 
-            using (StreamWriter streamWriter = new StreamWriter(path))
+            using (StreamWriter streamWriter = File.CreateText(path))
             {
-                IEnumerable<string> keys = wordTranslations.Keys;
+                IEnumerable<string> keys = keyValues.Keys;
                 List<string> values;
 
                 foreach (var key in keys)
                 {
-                    values = wordTranslations[key];
+                    values = keyValues[key];
 
                     streamWriter.Write(key + " - ");
                     foreach (string value in values)
