@@ -31,7 +31,7 @@ namespace DictFiles
                     streamWriter.Write(key + " - ");
                     foreach (string value in values)
                         streamWriter.Write(value + ", ");
-                    //streamWriter.WriteLine();
+                    streamWriter.WriteLine();
                 }
             }
         }
