@@ -35,10 +35,8 @@ namespace DictsConsoleInterface
             Console.ReadKey();   
         }
 
-        static public void DisplayMultiDictionaryFromFile(string path)
+        static public void DisplayMultiDictionary(MultiDictionary<string, string> multDictionary)
         {
-            MultiDictionary<string, string> multDictionary = DictionaryFileReadWrite.ReadFromFile(path);
-
             IEnumerable<string> keys = multDictionary.Keys;
             List<string> values;
 

@@ -19,7 +19,7 @@ namespace DictFiles
             if (!File.Exists(path))
                 throw new IOException($"File with path \"{path}\" does not exist");
 
-            using (StreamWriter streamWriter = File.CreateText(path))
+            using (StreamWriter streamWriter = new StreamWriter(path))
             {
                 IEnumerable<string> keys = wordTranslations.Keys;
                 List<string> values;
@@ -31,7 +31,7 @@ namespace DictFiles
                     streamWriter.Write(key + " - ");
                     foreach (string value in values)
                         streamWriter.Write(value + ", ");
-                    streamWriter.WriteLine();
+                    //streamWriter.WriteLine();
                 }
             }
         }
@@ -100,18 +100,19 @@ namespace DictFiles
             Path = path;
         }
 
-
-        public void Add(MultiDictionary<string,string> wordTranslations)
+        // Add new key and its values
+        public void Add(MultiDictionary<string,string> keyValues)
         {
-            DictionaryFileReadWrite.WriteToFile(wordTranslations, Path);
+            DictionaryFileReadWrite.WriteToFile(keyValues, Path);
         }
 
-
-        public void Replace(string wordKey, string newWordKey)
+        // Replace key on new one
+        public void Replace(string key, string newKey)
         {
-            File.WriteAllText(Path, File.ReadAllText(Path).Replace(wordKey, newWordKey));            
+            File.WriteAllText(Path, File.ReadAllText(Path).Replace(key, newKey));            
         }
 
+        // Replace value of key on new value of same key
         public void Replace(KeyValuePair<string,string> keyValuePair, string newValue)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -130,7 +131,7 @@ namespace DictFiles
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
 
-
+        // Remove value by key from file 
         public void Remove(KeyValuePair<string, string> keyValuePair)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
@@ -148,32 +149,32 @@ namespace DictFiles
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
 
-        public void Remove(string wordKey)
+        // Remove key from file
+        public void Remove(string key)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
 
-            if (!wordsFromFile.ContainsKey(wordKey))
-                throw new Exception($"There is not key \"{wordKey}\"");
+            if (!wordsFromFile.ContainsKey(key))
+                throw new Exception($"There is not key \"{key}\"");
 
-            wordsFromFile.Remove(wordKey);
+            wordsFromFile.Remove(key);
             DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
         }
 
-
-        public List<string> Find(string wordKey)
+        // Find values of key in file
+        public List<string> Find(string key)
         {
             MultiDictionary<string, string> wordsFromFile = DictionaryFileReadWrite.ReadFromFile(Path);
 
-            if (!wordsFromFile.ContainsKey(wordKey))
+            if (!wordsFromFile.ContainsKey(key))
                 return null;
 
-            return wordsFromFile[wordsFromFile.Keys.ToList().Find(x => x.Equals(wordKey))];
+            return wordsFromFile[wordsFromFile.Keys.ToList().Find(x => x.Equals(key))];
         }
 
-
+        // Create new file. RecreaterFlag - should the file be overwritten
         static public void Create(string path, bool recreateFlag)
         {
-
             if (File.Exists(path) && recreateFlag == false)
                 throw new IOException($"File with path \"{path}\" already exists");
 
@@ -181,12 +182,12 @@ namespace DictFiles
             fStream.Close();
         }
 
-
-        static public void Export(MultiDictionary<string, string> wordTranslations, string newPath)
+        // Export key and its values in separated file
+        static public void Export(MultiDictionary<string, string> keyValues, string newPath)
         {
             if (File.Exists(newPath))
                 throw new IOException($"File with path \"{newPath}\" already exists");
-            DictionaryFileReadWrite.WriteToFile(wordTranslations, newPath);
+            DictionaryFileReadWrite.WriteToFile(keyValues, newPath);
         }
     }
 }

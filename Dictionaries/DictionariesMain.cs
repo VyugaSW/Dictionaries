@@ -8,8 +8,6 @@ using System.Text.RegularExpressions;
 using System.IO;
 using Universal.Common.Collections;
 
-
-
 using DictsConsoleInterface;
 using DictFiles;
 
@@ -117,7 +115,7 @@ namespace Dictionaries
                             ExportWordTranslation();
                             break;
                         case 8:
-                            DictionaryConsole.DisplayMultiDictionaryFromFile(GivePath());
+                            DictionaryConsole.DisplayMultiDictionary(GetTextAsMultDictionaryFromFile());
                             DictionaryConsole.WaitKey();
                             break;
                         case 9:
@@ -157,21 +155,22 @@ namespace Dictionaries
         // Check that dicFile == null or dicFile != null
         private string DictFileIsNull()
         {
-            string path = null;
+            string path = "default";
             if (dictFile == null)
                 path = DictionaryEnterInfo.EnterPathForOpen();
             return path;
         }
 
         // Check how we need recreate dicFile
-        private int ReCreateDicFile(ref string path)
+        private string ReCreateDicFile()
         {
             int choice;
+            string path;
 
             path = DictFileIsNull();
 
             if (path == "0")
-                return 0;
+                return null;
 
             choice = RecreateQuestion(path);
 
@@ -182,20 +181,33 @@ namespace Dictionaries
 
             // If choice == 0 it means dictFile isnt empty
 
-            return 1;
+            return path;
         }
 
         // Return path of dicFile, if it doesnt exist we make user to creater new one 
-        private string GivePath()
+        private MultiDictionary<string,string> GetTextAsMultDictionaryFromFile()
         {
-            string path = null;
+            MultiDictionary<string,string> multDict;
+            string path;
+            try
+            {
+                path = DictFileIsNull();
 
-            ReCreateDicFile(ref path);
+                if (path != "default")
+                    dictFile = new DictionaryFile(path, FileMode.Open);
 
-            if (path == "0")
-                return null;
+                multDict = DictionaryFileReadWrite.ReadFromFile(dictFile.Path);
+            }
+            catch (IOException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
-            return dictFile.Path;
+            return multDict;
         }
 
 
@@ -256,16 +268,17 @@ namespace Dictionaries
 
         private int AddWord()
         {
-            string path = null;
-
             try 
             {
-                ReCreateDicFile(ref path);
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
-                dictFile.Add(DictionaryEnterInfo.EnterWordTranslations());
+                MultiDictionary<string, string> multDict = DictionaryEnterInfo.EnterWordTranslations();
+
+                if (multDict.ContainsKey(String.Empty))
+                    throw new Exception("Word cant be empty string");
+
+                dictFile.Add(multDict);
             }
             catch (IOException ex)
             {
@@ -309,13 +322,9 @@ namespace Dictionaries
 
         private int ReplaceWord()
         {
-            string path = null;
-
             try
             {
-                ReCreateDicFile(ref path);
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
                 dictFile.Replace(DictionaryEnterInfo.EnterLine("Enter word"), 
@@ -335,13 +344,9 @@ namespace Dictionaries
 
         private int ReplaceTranslation()
         {
-            string path = null;
-
             try
             {
-                ReCreateDicFile(ref path);
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
                 dictFile.Replace(DictionaryEnterInfo.EnterWordTranslation(), DictionaryEnterInfo.EnterLine("Enter new translation"));
@@ -388,13 +393,9 @@ namespace Dictionaries
 
         private int RemoveWord()
         {
-            string path = null;
-
             try
             {
-                ReCreateDicFile(ref path);
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
                 dictFile.Remove(DictionaryEnterInfo.EnterLine("Enter word for removing"));
@@ -413,13 +414,9 @@ namespace Dictionaries
 
         private int RemoveTranslation()
         {
-            string path = null;
-
             try
             {
-                ReCreateDicFile(ref path);
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
                 dictFile.Remove(DictionaryEnterInfo.EnterWordTranslation());
@@ -515,14 +512,11 @@ namespace Dictionaries
 
         private int FindTranslationFile()
         {
-            string path;
             string word;
 
             try
             {
-                path = DictFileIsNull();
-
-                if (path == "0")
+                if (ReCreateDicFile() == null)
                     return 0;
 
                 word = DictionaryEnterInfo.EnterLine("Enter word for finding");
@@ -548,7 +542,6 @@ namespace Dictionaries
         {
             try
             {
-
                 DictionaryFile.Export(DictionaryEnterInfo.EnterWordTranslations(), DictionaryEnterInfo.EnterPathForCreate());
             }
             catch (IOException ex)
