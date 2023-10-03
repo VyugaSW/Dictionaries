@@ -19,7 +19,7 @@ namespace DictFiles
             if (!File.Exists(path))
                 throw new IOException($"File with path \"{path}\" does not exist");
 
-            using (StreamWriter streamWriter = File.CreateText(path))
+            using (StreamWriter streamWriter = new StreamWriter(path, append:true))
             {
                 IEnumerable<string> keys = keyValues.Keys;
                 List<string> values;
