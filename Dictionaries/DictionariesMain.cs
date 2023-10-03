@@ -92,6 +92,7 @@ namespace Dictionaries
 
                 try
                 {
+                    Console.Clear();
                     switch (option)
                     {
                         case 1:
@@ -110,7 +111,7 @@ namespace Dictionaries
                             RemoveChoose();
                             break;
                         case 6:
-                            FindTranslation();
+                            FindChoose();
                             break;
                         case 7:
                             ExportWordTranslation();
@@ -153,21 +154,26 @@ namespace Dictionaries
             return choice;
         }
 
+        // Check that dicFile == null or dicFile != null
+        private string DictFileIsNull()
+        {
+            string path = null;
+            if (dictFile == null)
+                path = DictionaryEnterInfo.EnterPathForOpen();
+            return path;
+        }
+
         // Check how we need recreate dicFile
         private int ReCreateDicFile(ref string path)
         {
-            // Check that dicFile == null or dicFile != null
-            int choice = 0;
+            int choice;
 
-            if (dictFile == null)
-            {
-                path = DictionaryEnterInfo.EnterPathForOpen();
+            path = DictFileIsNull();
 
-                if (path == "0")
-                    return 0;
+            if (path == "0")
+                return 0;
 
-                choice = RecreateQuestion(path);
-            }
+            choice = RecreateQuestion(path);
 
             if (choice == 1)
                 dictFile = new DictionaryFile(path, FileMode.Create);
@@ -195,13 +201,15 @@ namespace Dictionaries
 
         private int OpenDictionaryFile()
         {
-            string path = DictionaryEnterInfo.EnterPathForOpen();
-
-            if (path == "0")
-                return 0;
+            string path;
 
             try
             {
+                path = DictionaryEnterInfo.EnterPathForOpen();
+
+                if (path == "0")
+                    return 0;
+
                 dictFile = new DictionaryFile(path, FileMode.Open);
             }
             catch (IOException ex)
@@ -218,32 +226,31 @@ namespace Dictionaries
 
         private int CreateDictionaryFile()
         {
-            string path = DictionaryEnterInfo.EnterPathForCreate();
 
-            if (path == "0")
-                return 0;
-
+            string path;
             int choice;
-            choice = RecreateQuestion(path);
-
-            if (choice == 1)
+            try
             {
-                try
-                {
+                path = DictionaryEnterInfo.EnterPathForCreate();
+
+                if (path == "0")
+                    return 0;
+
+                choice = RecreateQuestion(path);
+
+                if (choice == 1)
                     DictionaryFile.Create(path, true);
-                }
-                catch (IOException ex)
-                {
-                    throw ex;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+            }
+            catch (IOException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
-            return 1;
-            // If choise == 2 or choice == 3 we should break this function
+            return 1; // If choise == 2 or choice == 3 we should break this function
         }       
 
 
@@ -430,6 +437,36 @@ namespace Dictionaries
         }
 
 
+        private void FindChoose()
+        {
+            int choice = DictionaryMenu.Menu("MENU FIND", DictionaryMenu.subMenuFinding);
+            try
+            {
+                switch (choice)
+                {
+                    case 1:
+                        FindTranslationDir();
+                        break;
+                    case 2:
+                        FindTranslationFile();
+                        break;
+                    case 3:
+                        break;
+                }
+            }
+            catch (IOException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            DictionaryConsole.DisplayText("\n");
+            DictionaryConsole.WaitKey();
+        }
+
         private List<string> FindTranslationLoop(string word, string pathToDirectory)
         {
             List<string> tempTranslations = null;
@@ -452,19 +489,14 @@ namespace Dictionaries
             return tempTranslations;
         }
 
-        private int FindTranslation()
+        private int FindTranslationDir()
         {
-            string word = null;
-            string pathToDirectory = null;
+            string word;
+            string pathToDirectory;
 
             try
-            {
-                word = DictionaryEnterInfo.EnterLine("Enter word for finding its translation");
-                pathToDirectory = DictionaryEnterInfo.EnterLine("Enter path to directory with dictionaries");
-
-                DictionaryConsole.DisplayText($"All found tranlsations of word \"{word}\"");
-                DictionaryConsole.DisplayText(FindTranslationLoop(word, pathToDirectory));
-                DictionaryConsole.WaitKey();           
+            {   pathToDirectory = DictionaryEnterInfo.EnterLine("Enter path to directory with dictionaries");
+                word = DictionaryEnterInfo.EnterLine("Enter word for finding and its translation");         
             }
             catch (IOException ex)
             {
@@ -475,6 +507,39 @@ namespace Dictionaries
                 throw ex;
             }
 
+            DictionaryConsole.DisplayText($"All found tranlsations of word \"{word}\":");
+            DictionaryConsole.DisplayText(FindTranslationLoop(word, pathToDirectory));
+
+            return 1;
+        }
+
+        private int FindTranslationFile()
+        {
+            string path;
+            string word;
+
+            try
+            {
+                path = DictFileIsNull();
+
+                if (path == "0")
+                    return 0;
+
+                word = DictionaryEnterInfo.EnterLine("Enter word for finding");
+                dictFile.Find(word);
+            }
+            catch (IOException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            DictionaryConsole.DisplayText($"All found tranlsations of word \"{word}\":");
+            DictionaryConsole.DisplayText(dictFile.Find(word));
+
             return 1;
         }
 
@@ -484,7 +549,7 @@ namespace Dictionaries
             try
             {
 
-                DictionaryFile.Export(DictionaryEnterInfo.EnterWordTranslations(), DictionaryEnterInfo.EnterPathForOpen());
+                DictionaryFile.Export(DictionaryEnterInfo.EnterWordTranslations(), DictionaryEnterInfo.EnterPathForCreate());
             }
             catch (IOException ex)
             {
