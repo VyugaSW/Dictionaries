@@ -14,12 +14,12 @@ namespace DictFiles
 
     static public class DictionaryFileReadWrite
     {
-        static public void WriteToFile(MultiDictionary<string, string> keyValues, string path)
+        static public void WriteToFile(MultiDictionary<string, string> keyValues, string path, bool addText)
         {
             if (!File.Exists(path))
                 throw new IOException($"File with path \"{path}\" does not exist");
 
-            using (StreamWriter streamWriter = new StreamWriter(path, append:true))
+            using (StreamWriter streamWriter = new StreamWriter(path, append: addText))
             {
                 IEnumerable<string> keys = keyValues.Keys;
                 List<string> values;
@@ -103,7 +103,7 @@ namespace DictFiles
         // Add new key and its values
         public void Add(MultiDictionary<string,string> keyValues)
         {
-            DictionaryFileReadWrite.WriteToFile(keyValues, Path);
+            DictionaryFileReadWrite.WriteToFile(keyValues, Path, true);
         }
 
         // Replace key on new one
@@ -128,7 +128,7 @@ namespace DictFiles
 
             wordsFromFile[keyValuePair.Key][valueIndex] = newValue;
 
-            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
+            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path, true);
         }
 
         // Remove value by key from file 
@@ -146,7 +146,7 @@ namespace DictFiles
                 throw new Exception($"Key \"{keyValuePair.Key}\" has only one value. It cant be deleted");
 
             wordsFromFile[keyValuePair.Key].Remove(keyValuePair.Value);
-            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
+            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path, true);
         }
 
         // Remove key from file
@@ -158,7 +158,7 @@ namespace DictFiles
                 throw new Exception($"There is not key \"{key}\"");
 
             wordsFromFile.Remove(key);
-            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path);
+            DictionaryFileReadWrite.WriteToFile(wordsFromFile, Path, true);
         }
 
         // Find values of key in file
@@ -187,7 +187,7 @@ namespace DictFiles
         {
             if (File.Exists(newPath))
                 throw new IOException($"File with path \"{newPath}\" already exists");
-            DictionaryFileReadWrite.WriteToFile(keyValues, newPath);
+            DictionaryFileReadWrite.WriteToFile(keyValues, newPath, true);
         }
     }
 }
